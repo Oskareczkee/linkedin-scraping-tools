@@ -11,8 +11,11 @@ from general_lk_utils import (
     remove_url_parameter,
     get_lk_credentials,
     enter_ids_on_lk_signin,
+    enter_auth_on_signin,
     select_contract_lk,
 )
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 
 LK_CREDENTIALS_PATH = "./lk_credentials.json"
 SCROLL_TO_BOTTOM_COMMAND = "window.scrollTo(0, document.body.scrollHeight);"
@@ -227,6 +230,13 @@ if __name__ == "__main__":
         required=False,
         default="csv",
     )
+    parser.add_argument(
+        "--headless",
+        type=None,
+        help="Opens browser in headless mode without opening app on your computer. Necessary for systems without interface like servers with debian",
+        action='store_true', #if arg is not present value will be False
+        required=False
+    )
     args = parser.parse_args()
 
     # Get the arguments
@@ -238,11 +248,19 @@ if __name__ == "__main__":
     wait_after_scroll_down = args.wait_after_scroll_down
     save_format = args.save_format
     search_url_base = remove_url_parameter(search_url, "start")
+    headless_mode=args.headless
 
     print("Starting the driver...")
     logging.getLogger("selenium").setLevel(logging.CRITICAL)
     # Start the webdriver without any logs
-    driver = webdriver.Chrome(options=Options())
+    options = Options()
+    if headless_mode:
+        options.add_argument('--headless') #headless opens browser without interface
+        
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    
+    driver = webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install())) #use chrome device manager for linux systems, where you can install chrome driver without chrome itself
     driver.maximize_window()
     driver.get("https://www.linkedin.com/login/")
 
@@ -254,7 +272,8 @@ if __name__ == "__main__":
         print(
             "It looks like you need to complete a double factor authentification. Please do so and press enter when you are done."
         )
-        input()
+        auth_code = input("Please input your auth code: ") #TODO: check if this works with email verification, works for phone verification
+        enter_auth_on_signin(driver, auth_code)
 
     print("Selecting the contract...")
 
@@ -263,7 +282,7 @@ if __name__ == "__main__":
     driver.get(search_url)
 
     print(
-        "Manual actions needed: go to the browser window and unzoom the page so that the whole page fits in the screen in 2 times. Then press enter here."
+        "Manual actions needed: go to the browser window and unzoom the page so that the whole page fits in the screen in 2 times. Then press enter here." #TODO: get rid of this manual action somehow
     )
     input()
 

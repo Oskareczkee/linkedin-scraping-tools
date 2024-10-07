@@ -30,6 +30,15 @@ def enter_ids_on_lk_signin(driver, email, password):
     time.sleep(1)
     submitElement.click()
     time.sleep(5)
+    
+def enter_auth_on_signin(driver, auth):
+    time.sleep(2)
+    authInputElement = driver.find_element(By.ID, "input__phone_verification_pin")
+    authInputElement.send_keys(auth)
+    submitBtn = driver.find_element(By.ID, "two-step-submit-button")
+    time.sleep(1)
+    submitBtn.click()
+    time.sleep(5)
 
 
 def get_lk_url_from_sales_lk_url(url):

@@ -74,6 +74,18 @@ You can run the script with the following command:
 python your_script_name.py --profile_file "./lksn_data/1692694694168_lk_salesnav_export.csv" --shortest_wait_time 3 --longest_wait_time 8 --page_load_time 4
 ```
 
+### linux headless mode
+Sometimes you don't have interface, but want to run the program. You will need to install chrome driver
+#### Download chrome
+```bash
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+```
+#### Install it
+```bash 
+apt-get install -y ./google-chrome-stable_current_amd64.deb 
+```
+Please not that you can also use other browsers as soon as you can install their drivers
+
 
 
 ## Disclaimer
